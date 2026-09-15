@@ -41,6 +41,8 @@ $factory->define(Users_model::class, function (Faker\Generator $faker) {
         'autologin_enabled' => $faker->numberBetween(0, 1),
         'current_user' => $faker->word(),
         'is_hidden' => $faker->numberBetween(0, 1),
+        'mdm_managed' => $faker->numberBetween(0, 1),
+        'mobile_account' => $faker->numberBetween(0, 1),
     ];
 });
 

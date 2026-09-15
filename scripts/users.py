@@ -4,6 +4,7 @@
 import subprocess
 import os
 import plistlib
+import platform
 from datetime import datetime
 import time
 
@@ -94,7 +95,51 @@ def get_group_names():
     except Exception:
         return {}
 
+def find_string_in_dict(search_string, value):
+    out = ""
+
+    try:
+        if isinstance(value, list):
+            for items_list in value:
+                if "spconfigprofile_other_info" in items_list:
+                    for key_dict, value_dict in items_list.items():
+                        if key_dict == "spconfigprofile_other_info":
+                            return value_dict[0]['spconfigprofile_managed_userGUID'].split(" ")[0].strip()
+                out = out + find_string_in_dict(search_string, items_list)
+
+        elif isinstance(value, dict):
+            for items_dict in value:
+                if items_dict == "_items" :
+                    out = out + find_string_in_dict(search_string, value[items_dict])
+
+        return out
+
+    except Exception:
+        return False
+
+def get_mdm_managed_users():
+
+    # Only on macOS 26 and higher
+    cmd = ['/usr/sbin/system_profiler', 'SPConfigurationProfileDataType', '-xml']
+    proc = subprocess.Popen(cmd, shell=False, bufsize=-1,
+                            stdin=subprocess.PIPE,
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (output, unused_error) = proc.communicate()
+
+    plist = plistlib.loads(output)
+    sp_dict = plist[0]
+    items = sp_dict['_items']
+ 
+    return find_string_in_dict('spconfigprofile_managed_userGUID', items)
+
 def process_user_info(all_users,group_names):
+
+    # MDM Managed users is macOS 26 or higher
+    if getOsVersion() < 26:
+        mdm_managed = False
+    else:
+        mdm_managed = get_mdm_managed_users()
+
     out = []
     i = 0
 
@@ -123,6 +168,10 @@ def process_user_info(all_users,group_names):
                 user_atts['password_hint'] = user[user_att][0]
             elif user_att == 'dsAttrTypeStandard:GeneratedUID':
                 user_atts['generated_uuid'] = user[user_att][0]
+                if user[user_att][0] == mdm_managed:
+                    user_atts['mdm_managed'] = 1
+                else:
+                    user_atts['mdm_managed'] = 0
             elif user_att == 'dsAttrTypeStandard:NFSHomeDirectory':
                 user_atts['home_directory'] = user[user_att][0]
             elif user_att == 'dsAttrTypeStandard:PrimaryGroupID':
@@ -202,6 +251,13 @@ def process_user_info(all_users,group_names):
                 user_atts['original_node_name'] = user[user_att][0]
             elif user_att == 'dsAttrTypeStandard:PrimaryNTDomain':
                 user_atts['primary_nt_domain'] = user[user_att][0]
+            elif user_att == 'dsAttrTypeStandard:AuthenticationAuthority':
+                # Check for mobile accounts
+                for auth_auth_entry in user[user_att]:
+                    if "LocalCachedUser" in auth_auth_entry:
+                        user_atts['mobile_account'] = 1
+                    else:
+                        user_atts['mobile_account'] = 0
             elif user_att == 'dsAttrTypeStandard:CopyTimestamp':
                 try:
                     user_atts['copy_timestamp'] = str(time.mktime(datetime.strptime(user[user_att][0].strip(), "%Y-%m-%dT%H:%M:%SZ").timetuple()))
@@ -334,6 +390,12 @@ def to_bool(s):
         return 1
     else:
         return 0
+
+def getOsVersion():
+    """Returns the Darwin version."""
+    # Catalina -> 10.15.7 -> 19.6.0 -> 19
+    darwin_version_tuple = platform.release().split('.')
+    return int(darwin_version_tuple[0])
 
 def main():
     """Main"""

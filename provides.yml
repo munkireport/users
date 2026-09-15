@@ -27,3 +27,7 @@ widgets:
         view: users_autologin_enabled_widget
     users_is_hidden:
         view: users_is_hidden_widget
+    users_mobile_account:
+        view: users_mobile_account_widget
+    users_mdm_managed:
+        view: users_mdm_managed_widget

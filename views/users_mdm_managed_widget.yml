@@ -1,0 +1,9 @@
+type: scrollbox
+widget_id: users-mdm_managed-widget
+api_url: /module/users/mdm_managed
+i18n_title: users.mdm_manageds
+icon: fa-circle-o
+listing_link: /show/listing/users/users
+search_key: serial_number
+i18n_empty_result: users.no_mdm_managed
+badge: count

@@ -60,4 +60,6 @@ Database:
 * linked_timestamp - bigint - Timestamp of when Apple ID was linked to account
 * autologin_enabled - boolean - If automatic login is enabled or disabled
 * current_user - varchar(255) - Current logged in user name
-* boolean - boolean - If user account is a hidden user
+* is_hidden - boolean - If user account is a hidden user
+* mdm_managed - boolean - If user account is MDM managed
+* mobile_account - boolean - If user account is a mobile account

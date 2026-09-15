@@ -47,5 +47,11 @@
     "autologin_enabled": "Auto Login Enabled",
     "is_hidden": "Is Hidden",
     "no_is_hidden": "No Hidden User Accounts",
+    "mdm_managed": "MDM Managed Account",
+    "mdm_manageds": "MDM Managed Accounts",
+    "no_mdm_managed": "No MDM Managed Accounts",
+    "mobile_account": "Mobile Account",
+    "mobile_accounts": "Mobile Accounts",
+    "no_mobile_account": "No Mobile Accounts",
     "no_autologin_enabled_users": "No Users with Auto Login Enabled"
 }

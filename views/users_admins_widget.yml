@@ -5,5 +5,5 @@ i18n_title: users.admin_users
 icon: fa-user-circle-o
 listing_link: /show/listing/users/users
 search_key: record_name
-i18nEmptyResult: users.no_admins
+i18n_empty_result: users.no_admins
 badge: count

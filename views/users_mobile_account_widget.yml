@@ -1,0 +1,9 @@
+type: scrollbox
+widget_id: users-mobile_account-widget
+api_url: /module/users/mobile_account
+i18n_title: users.mobile_accounts
+icon: fa-car
+listing_link: /show/listing/users/users
+search_key: serial_number
+i18n_empty_result: users.no_mobile_account
+badge: count

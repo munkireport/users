@@ -45,6 +45,8 @@ class Users_model extends Eloquent
         'autologin_enabled',
         'current_user',
         'is_hidden',
+        'mdm_managed',
+        'mobile_account',
     ];
 
     public $timestamps = false;

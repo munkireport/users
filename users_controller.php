@@ -84,6 +84,42 @@ class Users_controller extends Module_controller
    }
 
     /**
+     * REST API for retrieving users with mdm managed for widget
+     * @tuxudo
+     *
+     **/
+     public function mdm_managed()
+     {
+        jsonView(
+            Users_model::selectRaw('record_name, COUNT(record_name) AS count')
+                ->where('mdm_managed', '=', 1)
+                ->filter()
+                ->groupBy('record_name')
+                ->orderBy('count', 'desc')
+                ->get()
+                ->toArray()
+        );
+   }
+
+    /**
+     * REST API for retrieving users with mobile account for widget
+     * @tuxudo
+     *
+     **/
+     public function mobile_account()
+     {
+        jsonView(
+            Users_model::selectRaw('record_name, COUNT(record_name) AS count')
+                ->where('mobile_account', '=', 1)
+                ->filter()
+                ->groupBy('record_name')
+                ->orderBy('count', 'desc')
+                ->get()
+                ->toArray()
+        );
+   }
+
+    /**
      * REST API for retrieving ssh users for widget
      * @tuxudo
      *
@@ -148,7 +184,7 @@ class Users_controller extends Module_controller
     public function get_tab_data($serial_number = '')
     {
          jsonView(
-            Users_model::selectRaw('record_name, real_name, unique_id, password_hint, is_hidden, home_directory, primary_group_id, administrator, ssh_access, screenshare_access, autologin_enabled, user_shell, generated_uuid, last_login_timestamp, creation_time, password_last_set_time, failed_login_count, failed_login_timestamp, password_history_depth, linked_full_name, linked_timestamp, group_memership, meta_record_name, email_address, smb_group_rid, smb_home, smb_home_drive, smb_primary_group_sid, smb_sid, smb_script_path, smb_password_last_set, original_node_name, primary_nt_domain, copy_timestamp, `current_user`')
+            Users_model::selectRaw('record_name, real_name, unique_id, password_hint, is_hidden, home_directory, primary_group_id, administrator, mdm_managed, mobile_account, ssh_access, screenshare_access, autologin_enabled, user_shell, generated_uuid, last_login_timestamp, creation_time, password_last_set_time, failed_login_count, failed_login_timestamp, password_history_depth, linked_full_name, linked_timestamp, group_memership, meta_record_name, email_address, smb_group_rid, smb_home, smb_home_drive, smb_primary_group_sid, smb_sid, smb_script_path, smb_password_last_set, original_node_name, primary_nt_domain, copy_timestamp, `current_user`')
                 ->where('local_users.serial_number', $serial_number)
                 ->filter()
                 ->get()
