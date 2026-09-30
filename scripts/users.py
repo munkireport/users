@@ -96,24 +96,15 @@ def get_group_names():
         return {}
 
 def find_string_in_dict(search_string, value):
-    out = ""
+    index = 0
 
     try:
-        if isinstance(value, list):
-            for items_list in value:
-                if "spconfigprofile_other_info" in items_list:
-                    for key_dict, value_dict in items_list.items():
-                        if key_dict == "spconfigprofile_other_info":
-                            return value_dict[0]['spconfigprofile_managed_userGUID'].split(" ")[0].strip()
-                out = out + find_string_in_dict(search_string, items_list)
 
-        elif isinstance(value, dict):
-            for items_dict in value:
-                if items_dict == "_items" :
-                    out = out + find_string_in_dict(search_string, value[items_dict])
-
-        return out
-
+        lines = value.split("\n")
+        for line in lines:
+            if search_string in line:
+                return lines[index+1].replace('<string>', '').strip().split(' ')[0]
+            index += 1 
     except Exception:
         return False
 
@@ -126,16 +117,13 @@ def get_mdm_managed_users():
                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     (output, unused_error) = proc.communicate()
 
-    plist = plistlib.loads(output)
-    sp_dict = plist[0]
-    items = sp_dict['_items']
- 
-    return find_string_in_dict('spconfigprofile_managed_userGUID', items)
+    return find_string_in_dict('spconfigprofile_managed_userGUID', output.decode("utf-8", errors="ignore"))
 
 def process_user_info(all_users,group_names):
+    mdm_managed = get_mdm_managed_users()
 
     # MDM Managed users is macOS 26 or higher
-    if getOsVersion() < 26:
+    if getOsVersion() < 24:
         mdm_managed = False
     else:
         mdm_managed = get_mdm_managed_users()
@@ -198,7 +186,7 @@ def process_user_info(all_users,group_names):
                     groups_list = []
 
                     # Translate each group to real name
-                    for group in output.decode().split(' '):
+                    for group in output.decode("utf-8", errors="ignore").split(' '):
                         try:
                             groups_list.append(group_names[group.rstrip()])
                         except KeyError:

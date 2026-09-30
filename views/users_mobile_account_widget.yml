@@ -4,6 +4,6 @@ api_url: /module/users/mobile_account
 i18n_title: users.mobile_accounts
 icon: fa-car
 listing_link: /show/listing/users/users
-search_key: serial_number
+search_key: record_name
 i18n_empty_result: users.no_mobile_account
 badge: count
